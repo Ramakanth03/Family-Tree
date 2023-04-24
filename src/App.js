@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import { options } from "./Utiles";
+import ReactOrgChart from "./Components/reactOrgChart";
+import StyledTreeExample from "./Components/reactOrganizationalChart";
 
 function App() {
+  const [library, setLibrary] = useState(options[0].value);
+
+  function handleChange(e) {
+    setLibrary(e.target.value);
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <select value={library} onChange={handleChange}>
+        {options.map((option) => (
+          <option value={option.value}>Using Library {option.label}</option>
+        ))}
+      </select>
+      {library === "react-orgchart" && <ReactOrgChart />}
+      {library === "react-organizational-chart" && <StyledTreeExample />}
     </div>
   );
 }
