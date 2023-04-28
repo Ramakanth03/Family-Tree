@@ -1,13 +1,47 @@
 export const options = [
   {
+    label: "React Org Chart",
+    value: "react-orgchart",
+  },
+  {
     label: "React Organizational Chart",
     value: "react-organizational-chart",
   },
   {
-    label: "React Org Chart",
-    value: "react-orgchart",
+    label: "React D3 Tree",
+    value: "react-d3-tree",
   },
 ];
+export const initechOrg = {
+  id: 1,
+  name: "Bill Lumbergh",
+  actor: "Gary Cole",
+  children: [
+    {
+      id: 2,
+      name: "Peter Gibbons",
+      actor: "Ron Livingston",
+      children: [
+        {
+          id: 5,
+          name: "And More!!",
+          actor:
+            "This is just to show how to build a complex tree with multiple levels of children. Enjoy!",
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: "Milton Waddams",
+      actor: "Stephen Root",
+    },
+    {
+      id: 4,
+      name: "Bob Slydell",
+      actor: "John C. McGi...",
+    },
+  ],
+};
 
 export const orgData = [
   {
@@ -59,3 +93,33 @@ export const orgData = [
     img: "https://cdn.balkan.app/shared/8.jpg",
   },
 ];
+
+export const updatePropertyById = function (id, data, property, value) {
+  if (data.id === id) {
+    data[property] = value;
+  }
+  if (data.children !== undefined && data.children.length > 0) {
+    for (let i = 0; i < data.children.length; i++) {
+      data.children[i] = updatePropertyById(
+        id,
+        data.children[i],
+        property,
+        value
+      );
+    }
+  }
+
+  return data;
+};
+
+export const deleteObjectById = function (obj, id) {
+  if (obj.id === id) {
+    return null;
+  }
+  if (obj.children && obj.children.length > 0) {
+    obj.children = obj.children.filter(
+      (child) => deleteObjectById(child, id) !== null
+    );
+  }
+  return obj;
+};
