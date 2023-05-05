@@ -2,11 +2,18 @@ import OrgChart from "react-orgchart";
 import "react-orgchart/index.css";
 import BasicExample from "./modelPopup";
 import { useState } from "react";
-import { updatePropertyById, deleteObjectById, initechOrg } from "../Utiles";
+import {
+  updatePropertyByIdMultiple,
+  deleteObjectById,
+  initechOrg,
+} from "../Utiles";
 import ViewIcon from "../Util/ViewIcon.svg";
 import EditIcon from "../Util/EditIcon.svg";
 import AddIcon from "../Util/AddIcon.svg";
 import DeleteIcon from "../Util/DeleteIcon.svg";
+import profile from "../Util/profile.png";
+import PlusIcon from "../Util/PlusIcon.svg";
+import MinusIcon from "../Util/MinusIcon.svg";
 
 const ReactOrgChart = () => {
   const [isModelOpen, setIsModelOpen] = useState(false);
@@ -32,54 +39,101 @@ const ReactOrgChart = () => {
         setMode(mode);
       }
     };
+    const onToggleHandler = (node) => {
+      console.log("node -- ", node);
+      let updatedNode = { ...node };
+      if (!updatedNode.isCollapse) {
+        updatedNode.isCollapse = true;
+        updatedNode.hideChildren = [...updatedNode.children];
+        updatedNode.children = [];
+        const updateTreeData = updatePropertyByIdMultiple(
+          updatedNode.id,
+          treeData,
+          updatedNode
+        );
+        console.log("updateTreeData -- ", updateTreeData);
+        setTreeData({ ...updateTreeData });
+      } else {
+        updatedNode.isCollapse = false;
+        updatedNode.children = [...updatedNode.hideChildren];
+        updatedNode.hideChildren = [];
+        const updateTreeData = updatePropertyByIdMultiple(
+          updatedNode.id,
+          treeData,
+          updatedNode
+        );
+        console.log("updateTreeData -- ", updateTreeData);
+        setTreeData({ ...updateTreeData });
+      }
+    };
     return (
-      <div className="initechNode">
-        <img
-          src={"https://picsum.photos/200"}
-          alt="Girl in a jacket"
-          width="100"
-          height="100"
-        />
-        <div>{node.name}</div>
-        <img
-          src={ViewIcon}
-          alt="svg icon"
-          className="text-btn"
-          onClick={() => onProfileClick(node, "view")}
-        />
-        <img
-          src={EditIcon}
-          alt="svg icon"
-          className="text-btn"
-          onClick={() => onProfileClick(node, "edit")}
-        />
-        <img
-          src={AddIcon}
-          alt="svg icon"
-          className="text-btn"
-          onClick={() => onProfileClick(node, "add")}
-        />
-
-        {node.id !== treeData.id && (
+      <>
+        <div className="initechNode">
           <img
-            src={DeleteIcon}
+            src={node.image ? node.image : profile}
+            alt="profile"
+            width="100"
+            height="100"
+          />
+          <div>{node.name}</div>
+          <img
+            src={ViewIcon}
             alt="svg icon"
             className="text-btn"
-            onClick={() => onProfileClick(node, "delete")}
+            onClick={() => onProfileClick(node, "info")}
           />
+          <img
+            src={EditIcon}
+            alt="svg icon"
+            className="text-btn"
+            onClick={() => onProfileClick(node, "edit profile")}
+          />
+
+          {node.id !== treeData.id && (
+            <img
+              src={DeleteIcon}
+              alt="svg icon"
+              className="text-btn"
+              onClick={() => onProfileClick(node, "delete")}
+            />
+          )}
+          <img
+            src={AddIcon}
+            alt="svg icon"
+            className="text-btn"
+            onClick={() => onProfileClick(node, "add")}
+          />
+        </div>
+        {node.children && (
+          <div>
+            {node.isCollapse ? (
+              <img
+                src={PlusIcon}
+                alt="svg icon"
+                className="text-btn isCollapse"
+                onClick={() => onToggleHandler(node)}
+              />
+            ) : (
+              <img
+                src={MinusIcon}
+                alt="svg icon"
+                className="text-btn isCollapse"
+                onClick={() => onToggleHandler(node)}
+              />
+            )}
+          </div>
         )}
-      </div>
+      </>
     );
   };
 
   const onSubmit = (updatedNode) => {
     setIsModelOpen(false);
     console.log("updatedNode -- ", updatedNode);
-    const updateTreeData = updatePropertyById(
+    const updateTreeData = updatePropertyByIdMultiple(
       updatedNode.id,
       treeData,
-      mode === "edit" ? "name" : "children",
-      mode === "edit" ? updatedNode.name : updatedNode.children
+      updatedNode
     );
     setTreeData(updateTreeData);
     setMode("");
@@ -90,7 +144,7 @@ const ReactOrgChart = () => {
     setMode("");
   };
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 30 }}>
       <OrgChart tree={treeData} NodeComponent={MyNodeComponent} />
       {isModelOpen && (
         <BasicExample

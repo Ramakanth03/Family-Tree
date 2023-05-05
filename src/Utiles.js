@@ -1,32 +1,21 @@
-export const options = [
-  {
-    label: "React Org Chart",
-    value: "react-orgchart",
-  },
-  {
-    label: "React Organizational Chart",
-    value: "react-organizational-chart",
-  },
-  {
-    label: "React D3 Tree",
-    value: "react-d3-tree",
-  },
-];
 export const initechOrg = {
   id: 1,
   name: "Bill Lumbergh",
   actor: "Gary Cole",
+  isCollapse: false,
   children: [
     {
       id: 2,
       name: "Peter Gibbons",
       actor: "Ron Livingston",
+      isCollapse: false,
       children: [
         {
           id: 5,
           name: "And More!!",
           actor:
             "This is just to show how to build a complex tree with multiple levels of children. Enjoy!",
+          isCollapse: false,
         },
       ],
     },
@@ -34,78 +23,26 @@ export const initechOrg = {
       id: 3,
       name: "Milton Waddams",
       actor: "Stephen Root",
+      isCollapse: false,
     },
     {
       id: 4,
       name: "Bob Slydell",
       actor: "John C. McGi...",
+      isCollapse: false,
     },
   ],
 };
 
-export const orgData = [
-  {
-    id: 1,
-    name: "Denny Curtis",
-    title: "CEO",
-    img: "https://cdn.balkan.app/shared/2.jpg",
-  },
-  {
-    id: 2,
-    pid: 1,
-    name: "Ashley Barnett",
-    title: "Sales Manager",
-    img: "https://cdn.balkan.app/shared/3.jpg",
-  },
-  {
-    id: 3,
-    pid: 1,
-    name: "Caden Ellison",
-    title: "Dev Manager",
-    img: "https://cdn.balkan.app/shared/4.jpg",
-  },
-  {
-    id: 4,
-    pid: 2,
-    name: "Elliot Patel",
-    title: "Sales",
-    img: "https://cdn.balkan.app/shared/5.jpg",
-  },
-  {
-    id: 5,
-    pid: 2,
-    name: "Lynn Hussain",
-    title: "Sales",
-    img: "https://cdn.balkan.app/shared/6.jpg",
-  },
-  {
-    id: 6,
-    pid: 3,
-    name: "Tanner May",
-    title: "Developer",
-    img: "https://cdn.balkan.app/shared/7.jpg",
-  },
-  {
-    id: 7,
-    pid: 3,
-    name: "Fran Parsons",
-    title: "Developer",
-    img: "https://cdn.balkan.app/shared/8.jpg",
-  },
-];
-
-export const updatePropertyById = function (id, data, property, value) {
+export const updatePropertyByIdMultiple = function (id, data, obj = {}) {
   if (data.id === id) {
-    data[property] = value;
+    for (const property in obj) {
+      data[property] = obj[property];
+    }
   }
   if (data.children !== undefined && data.children.length > 0) {
     for (let i = 0; i < data.children.length; i++) {
-      data.children[i] = updatePropertyById(
-        id,
-        data.children[i],
-        property,
-        value
-      );
+      data.children[i] = updatePropertyByIdMultiple(id, data.children[i], obj);
     }
   }
 
@@ -120,6 +57,7 @@ export const deleteObjectById = function (obj, id) {
     obj.children = obj.children.filter(
       (child) => deleteObjectById(child, id) !== null
     );
+    if (!obj.children.length) delete obj.children;
   }
   return obj;
 };
